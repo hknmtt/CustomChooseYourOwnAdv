@@ -3,6 +3,7 @@ from importlib import import_module
 clear = lambda: os.system('clear')
 
 def sprint(text, typing_speed = 0):
+    typing_speed = int(typing_speed)
     # Caso tempo for 0 ou não especificado, apenas printa de forma normal
     if typing_speed == 0:
         print(text)
@@ -16,48 +17,52 @@ def sprint(text, typing_speed = 0):
 
 def menu():
     clear()
-    sprint("\n\n        Welcome to the Custom Choose Your Own Adventure\n\n            Please type your desired game!\n        We have by default jogo1, test1, and test2\n\n", 0)
+    sprint("\n\n        Welcome to the Custom Choose Your Own Adventure\n\n            Please type your desired game!\n        We have by default jogo1, test1, and test2\n\n", 100)
     le_game = input('Enter desired game: ')
     #ajusta o nome do jogo para pasta
     le_game = "games." + le_game
-    play_game(le_game)
+    start(le_game)
 
-def play_game(jogo):
+def start(jogo):
     clear()
     #importa o jogo informado no menu
     file = import_module(jogo)
     #importa o dict do jogo
     global rooms
     rooms = getattr(file, 'rooms')
-    #printa o menu do jogo e depois executa
-    sprint(rooms['menu'][0])
-    input("Enter anything to continue: ")
+    #executa sala inicial
     play()
 
-def play(current_room = '1'):
+class Room:
+    def __init__(self, current_room):
+        self.txt = rooms[current_room]['txt']
+        self.spd = rooms[current_room]['spd']
+        self.choicetxt = rooms[current_room]['choicetxt']
+        self.one = rooms[current_room]['1']
+        self.two = rooms[current_room]['2']
+        self.three = rooms[current_room]['3']
+        self.four = rooms[current_room]['4']
+
+def play(current_room = 'inicial'):
     clear()
+    room = Room(current_room)
     #printa o texto da sala
-    sprint(rooms[current_room][0], 0)
-    #permite escolha do jogador
+    sprint(room.txt, room.spd)
+
     while True:
-        try:
-            choice = rooms[current_room][int(input(rooms[current_room][5]))]
-        except:
-            print('Type a number 1 to 4')
-        else:
-            if choice != 0: break
-            sprint("Choice not recognized, try again")
-    #caso vitoria, para o jogo e volta ao menu principal
-    if choice == 'win':
-        sprint(rooms['wintext'])
-        input("Type anything to return to menu")
-        menu()
-    #vai para sala definida pela escolha
-    else:
-        play(choice)
+        choice = input(room.choicetxt)
+        if choice in ['1','2','3','4']:
+            break
+        print('Invalid choice, please input a number between 1 and 4')
+    if choice == '1':
+        play(room.one)
+    elif choice == '2':
+        play(room.two)
+    elif choice == '3':
+        play(room.three)
+    elif choice == '4':
+        play(room.four)
+
 
 
 menu()
-
-
-#A resolver: input 5 of dooms
