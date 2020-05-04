@@ -2,6 +2,13 @@ import sys,time,random,os
 from importlib import import_module
 clear = lambda: os.system('clear')
 
+class Room:
+    def __init__(self, current_room):
+        self.txt = rooms[current_room]['txt']
+        self.spd = rooms[current_room]['spd']
+        self.choicetxt = rooms[current_room]['choicetxt']
+        self.connections = rooms[current_room]['connections']
+
 def sprint(text, typing_speed = 0):
     typing_speed = int(typing_speed)
     # Caso tempo for 0 ou não especificado, apenas printa de forma normal
@@ -15,9 +22,17 @@ def sprint(text, typing_speed = 0):
             time.sleep(random.random()*10.0/typing_speed)
         print('')
 
+def remove_prefix(text, command):
+    for word in command[:]:
+        if text.startswith(word):
+            new_text = text[len(word):]
+    return new_text
+
 def menu():
     clear()
-    sprint("\n\n        Welcome to the Custom Choose Your Own Adventure\n\n            Please type your desired game!\n        We have by default jogo1, test1, and test2\n\n", 100)
+    sprint(('\n\nBem vindo ao Txtgame\n'
+    'Por favor digite o jogo desejado\n'
+    'Temos por padrão jogo1\n\n\n'), 0)
     le_game = input('Enter desired game: ')
     #ajusta o nome do jogo para pasta
     le_game = "games." + le_game
@@ -33,35 +48,33 @@ def start(jogo):
     #executa sala inicial
     play()
 
-class Room:
-    def __init__(self, current_room):
-        self.txt = rooms[current_room]['txt']
-        self.spd = rooms[current_room]['spd']
-        self.choicetxt = rooms[current_room]['choicetxt']
-        self.one = rooms[current_room]['1']
-        self.two = rooms[current_room]['2']
-        self.three = rooms[current_room]['3']
-        self.four = rooms[current_room]['4']
-
 def play(current_room = 'inicial'):
     clear()
+    global room
     room = Room(current_room)
     #printa o texto da sala
     sprint(room.txt, room.spd)
 
+    #loop comandos
     while True:
-        choice = input(room.choicetxt)
-        if choice in ['1','2','3','4']:
-            break
-        print('Invalid choice, please input a number between 1 and 4')
-    if choice == '1':
-        play(room.one)
-    elif choice == '2':
-        play(room.two)
-    elif choice == '3':
-        play(room.three)
-    elif choice == '4':
-        play(room.four)
+        user_input = input(room.choicetxt)
+        user_input = user_input.lower() # formatação do input do usuario
+
+        if user_input.startswith(ir_db): #checa se o usuario digitou o comando ir(qualquer variaçao)
+            try:
+                go_to(remove_prefix(user_input.lower(), ir_db))
+            except:
+                print('Não consigo ir pra lá!')
+        print('Comando não reconhecido')
+
+def go_to(user_input):
+    user_input = ''.join(e for e in user_input if e.isalnum())
+    if user_input in room.connections:
+        play(user_input)
+    else:
+        k = 1/0
+
+ir_db = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 
 
 
