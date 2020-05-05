@@ -91,7 +91,7 @@ def command(user_input):
             drop_item(current_room['id'], remove_prefix(user_input, largar_db))
 
         elif user_input.startswith('inventario') or user_input.startswith('inv'):
-            print("Inventário: " + ','.join(inventory))
+            print("Inventário: " + ', '.join(inventory))
 
         elif user_input.startswith(olhar_db):
             look(remove_prefix(user_input, olhar_db))
@@ -102,9 +102,33 @@ def command(user_input):
 def debug(command):
     if command.startswith('debug_spawn '):
         rooms[current_room['id']]['objects'].append(command[12:])
+
+    elif command.startswith('debug_destroy '):
+        try:
+            rooms[current_room['id']]['objects'].remove(command[14:])
+        except:
+            print('debug no such object in room')
+        else:
+            print(f'{command[14:]} pulverized')
+    elif command.startswith('debug_add_item '):
+        inventory.append(command[15:])
+
+    elif command.startswith('debug_remove_item '):
+        try:
+            inventory.remove(command[18:])
+        except:
+            print('debug no such object in inv')
+        else:
+            print(f'{command[18:]} incinerated')
+
     elif command.startswith('debug_change_state '):
         rooms[current_room['id']]['txt'] = rooms[current_room['id']][command[19:]]
         play(current_room['id'])
+
+    elif command.startswith('debug_tp '):
+        play(rooms[command[9:]]['id'])
+
+
 
 
 def play(room = 'inicial'):
