@@ -50,11 +50,14 @@ objects = {
     'txt_in_room' : '\nA spam can is here, from monty python',
     'description' : 'The spam can is really cool',
     'take_txt' : 'You kneel and take the spam',
+    'portable' : True,
     },
     'ham' : {
     'txt_in_room' : '\nA ham is here, from monty python',
     'description' : 'The ham can is really cool',
     'take_txt' : 'You kneel and take the ham',
+    'portable' : False,
+    'take_fail_txt' : "The ham is way too heavy",
     },
 
 

@@ -27,12 +27,18 @@ def change_room_state(room, state):
     rooms[room]['txt'] = rooms[room][state]
 
 def take_object(room, item):
-    if item in rooms[room]['objects']:
+    if item in rooms[room]['objects'] and objects[item]['portable']:
         inventory.append(item)
         rooms[room]['objects'].remove(item)
         print(objects[item]['take_txt'])
+
+    elif item in rooms[room]['objects'] and not objects[item]['portable']:
+        try:
+            print(objects[item]['take_fail_txt'])
+        except:
+            print("I can't take that object")
     else:
-        k = 1/0
+        print(f"I don't see {item} anywhere here")
 
 def drop_item(room, item):
     if item in inventory:
@@ -58,11 +64,9 @@ def command(user_input):
                 go_to(remove_prefix(user_input.lower(), ir_db))
             except ZeroDivisionError:
                 print('Não consigo ir pra lá!')
+
         elif user_input.startswith(pegar_db): #checa se o usuario digitou o comando pegar
-            try:
-                take_object(current_room['id'], remove_prefix(user_input.lower(), pegar_db))
-            except ZeroDivisionError:
-                print('\nNão consigo encontrar esse objeto')
+            take_object(current_room['id'], remove_prefix(user_input.lower(), pegar_db))
 
         elif user_input.startswith(largar_db): #checa se o usuario digitou o comando dropar
             try:
@@ -73,6 +77,11 @@ def command(user_input):
         elif user_input.startswith('inventario') or user_input.startswith('inv'):
             print("Inventário: " + ','.join(inventory))
 
+        else:
+            print('\n Não entendi')
+
+def debug(command):
+    return True
 
 def play(room = 'inicial'):
     clear()
@@ -97,9 +106,8 @@ def play(room = 'inicial'):
 
 ir_db = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 pegar_db = ('pegar ', 'take ', 'tomar ', 'get ')
-largar_db = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar ')
+largar_db = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
 
-clear()
 #importa o jogo informado no menu
 file = import_module('games.jogo1')
 #importa o dict do jogo
