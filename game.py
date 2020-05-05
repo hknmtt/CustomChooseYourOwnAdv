@@ -50,20 +50,22 @@ def drop_item(room, item):
 
 def go_to(arg):
     arg = ''.join(e for e in arg if e.isalnum())
-    if arg in current_room['connections']:
+    if arg in current_room['connections'] and rooms[arg]['locked']:
+        try:
+            print(rooms[arg]['locked_txt'])
+        except:
+            print('The way is blocked')
+    elif arg in current_room['connections'] and not rooms[arg]['locked']:
         play(arg)
     else:
-        k = 1/0
+        print(f"I can't go to {arg} from here, or i don't know where it is")
 
 def command(user_input):
     if user_input.startswith('debug'):
         debug_commands(user_input)
     else:
         if user_input.startswith(ir_db): #checa se o usuario digitou o comando ir(qualquer variaçao)
-            try:
-                go_to(remove_prefix(user_input.lower(), ir_db))
-            except ZeroDivisionError:
-                print('Não consigo ir pra lá!')
+            go_to(remove_prefix(user_input.lower(), ir_db))
 
         elif user_input.startswith(pegar_db): #checa se o usuario digitou o comando pegar
             take_object(current_room['id'], remove_prefix(user_input.lower(), pegar_db))

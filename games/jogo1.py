@@ -17,6 +17,7 @@ rooms = {
         'choicetxt' : ('>>'),
         'connections' : ['cozinha','banheiro'],
         'objects' : ['spam', 'ham'],
+        'locked' : False,
         },
     'cozinha' : { 'id' : 'cozinha',
         'txt' : 'Aqui tem café',
@@ -24,6 +25,7 @@ rooms = {
         'choicetxt' : ('>>'),
         'connections' : ['inicial','rua'],
         'objects' : ['ham'],
+        'locked' : False,
         0 : 'Aqui tem café',
         1 : 'Aqui não tem mais café',
         2 : 'Aqui ta fazendo café',
@@ -34,6 +36,8 @@ rooms = {
         'choicetxt' : ('>>'),
         'connections' : ['inicial'],
         'objects' : [],
+        'locked' : True,
+        'locked_txt' : 'The bathroom is locked'
         },
     'rua' : { 'id' : 'rua',
         'txt' : ('This is outside, you can only go to kitchen'),
@@ -41,6 +45,7 @@ rooms = {
         'choicetxt' : ('>>'),
         'connections' : ['cozinha'],
         'objects' : [],
+        'locked' : True,
         },
     }
 
