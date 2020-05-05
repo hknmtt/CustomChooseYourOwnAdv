@@ -3,11 +3,30 @@ from importlib import import_module
 clear = lambda: os.system('clear')
 
 class Room:
-    def __init__(self, current_room):
-        self.txt = rooms[current_room]['txt']
-        self.spd = rooms[current_room]['spd']
-        self.choicetxt = rooms[current_room]['choicetxt']
-        self.connections = rooms[current_room]['connections']
+    def __init__(self, room):
+        self.txt = rooms[room]['txt']
+        self.spd = rooms[room]['spd']
+        self.choicetxt = rooms[room]['choicetxt']
+        self.connections = rooms[room]['connections']
+        self.objects = rooms[room]['objects']
+
+    def change_room_state(room, state):
+        rooms[room]['txt'] = rooms[room][state]
+
+    def take_object(room, item):
+        if item in rooms[room]['objects']:
+            inventory.append(item)
+            rooms[room]['objects'].remove(item)
+            print(objects[item]['take_txt'])
+        else:
+            k = 1/0
+
+
+class Object:
+    def __init__(self, item):
+        self.text_in_room = objects[item]['txt_in_room']
+        self.description = objects[item]['description']
+
 
 def sprint(text, typing_speed = 0):
     typing_speed = int(typing_speed)
@@ -45,6 +64,10 @@ def start(jogo):
     #importa o dict do jogo
     global rooms
     rooms = getattr(file, 'rooms')
+    global objects
+    objects = getattr(file, 'objects')
+    global inventory
+    inventory = getattr(file, 'starterinv')
     #executa sala inicial
     play()
 
@@ -54,6 +77,11 @@ def play(current_room = 'inicial'):
     room = Room(current_room)
     #printa o texto da sala
     sprint(room.txt, room.spd)
+    try:
+        sprint([objects[x]['txt_in_room'] for x in room.objects][0], room.spd) #printa texto de objetos na sala
+    except:
+        print('nada') #debug pra quando nao tem nada
+
 
     #loop comandos
     while True:
@@ -61,11 +89,30 @@ def play(current_room = 'inicial'):
         user_input = user_input.lower() # formatação do input do usuario
 
         if user_input.startswith(ir_db): #checa se o usuario digitou o comando ir(qualquer variaçao)
+            #try:
+            go_to(remove_prefix(user_input.lower(), ir_db))
+            #except:
+               # print('Não consigo ir pra lá!')
+
+        elif user_input.startswith(pegar_db): #checa se o usuario digitou o comando pegar
             try:
-                go_to(remove_prefix(user_input.lower(), ir_db))
+                Room.take_object(current_room, remove_prefix(user_input.lower(), pegar_db))
             except:
-                print('Não consigo ir pra lá!')
-        print('Comando não reconhecido')
+                print('\nNão consigo encontrar esse objeto')
+
+        elif user_input.startswith('inventario') or user_input.startswith('inv'):
+            print(inventory)
+
+        elif user_input.startswith('debug_state '): # comando debug para forçar mudança de estado da sala
+            Room.change_room_state(current_room, int(user_input[12]))
+            play(current_room)
+
+        elif user_input.startswith('debug_goto '): #comando debug para ir para sala mesmo sem conexão
+            play(user_input[11:])
+
+
+        else:
+            print('Comando não reconhecido')
 
 def go_to(user_input):
     user_input = ''.join(e for e in user_input if e.isalnum())
@@ -75,7 +122,6 @@ def go_to(user_input):
         k = 1/0
 
 ir_db = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
-
-
+pegar_db = ('pegar ', 'take ', 'tomar ', 'get ')
 
 menu()
