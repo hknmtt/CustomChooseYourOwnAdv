@@ -18,6 +18,7 @@ rooms = {
         'connections' : ['cozinha','banheiro'],
         'objects' : ['spam', 'ham'],
         'locked' : False,
+        'look_at_norte': 'Ao norte não tem porra nenhuma',
         },
     'cozinha' : { 'id' : 'cozinha',
         'txt' : 'Aqui tem café',
@@ -64,6 +65,10 @@ objects = {
     'portable' : False,
     'take_fail_txt' : "The ham is way too heavy",
     },
+    'arma' : {
+    'portable' : False,
+    'drop_fail_txt' : 'It would be unwise to leave my gun here',
+    }
 
 
 }

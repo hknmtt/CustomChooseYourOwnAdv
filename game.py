@@ -27,26 +27,39 @@ def change_room_state(room, state):
     rooms[room]['txt'] = rooms[room][state]
 
 def take_object(room, item):
-    if item in rooms[room]['objects'] and objects[item]['portable']:
-        inventory.append(item)
-        rooms[room]['objects'].remove(item)
-        print(objects[item]['take_txt'])
-
-    elif item in rooms[room]['objects'] and not objects[item]['portable']:
+    if item in rooms[room]['objects'] and not objects[item]['portable']:
         try:
             print(objects[item]['take_fail_txt'])
         except:
             print("I can't take that object")
+    elif item in rooms[room]['objects']:
+        inventory.append(item)
+        rooms[room]['objects'].remove(item)
+        print(objects[item]['take_txt'])
     else:
         print(f"I don't see {item} anywhere here")
 
 def drop_item(room, item):
-    if item in inventory:
+    if item in inventory and not objects[item]['portable']:
+        try:
+            print(objects[item]['drop_fail_txt'])
+        except:
+            print(f"I don't want to or i can't drop {item}")
+    elif item in inventory:
         inventory.remove(item)
         rooms[room]['objects'].append(item)
-        print('You dropped the item')
+        print(f'You dropped the {item}')
     else:
-        k = 1/0
+        print(f"I don't want drop {item} or i don't have it")
+
+def look(direction = 'around'):
+    if direction in same_room_db:
+        play(current_room['id'])
+    else:
+        try:
+            sprint(current_room['look_at_'+ direction], current_room['spd'])
+        except:
+            print(f" I don't know where {direction} is")
 
 def go_to(arg):
     arg = ''.join(e for e in arg if e.isalnum())
@@ -71,16 +84,16 @@ def command(user_input):
             take_object(current_room['id'], remove_prefix(user_input.lower(), pegar_db))
 
         elif user_input.startswith(largar_db): #checa se o usuario digitou o comando dropar
-            try:
-                drop_item(current_room['id'], remove_prefix(user_input.lower(), largar_db))
-            except ZeroDivisionError:
-                print('\nNão consigo largar esse objeto ou não possuo ele')
+            drop_item(current_room['id'], remove_prefix(user_input.lower(), largar_db))
 
         elif user_input.startswith('inventario') or user_input.startswith('inv'):
             print("Inventário: " + ','.join(inventory))
 
+        elif user_input.startswith(olhar_db):
+            look(remove_prefix(user_input.lower(), olhar_db))
+
         else:
-            print('\n Não entendi')
+            print('\nNão entendi o que você quis dizer')
 
 def debug(command):
     return True
@@ -109,6 +122,8 @@ def play(room = 'inicial'):
 ir_db = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 pegar_db = ('pegar ', 'take ', 'tomar ', 'get ')
 largar_db = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
+same_room_db =('em volta', 'around', 'aqui')
+olhar_db = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ', 'verificar ', 'observar ')
 
 #importa o jogo informado no menu
 file = import_module('games.jogo1')
