@@ -15,13 +15,13 @@ rooms = {
         'spd' : 0,
         'choicetxt' : ('>>'),
         'connections' : ('cozinha','banheiro'),
-        'objects' : ['spam'],
+        'objects' : ['spam', 'ham'],
         },
     'cozinha' : {'txt' : 'Aqui tem café',
         'spd' : 0,
         'choicetxt' : ('>>'),
         'connections' : ('inicial','rua'),
-        'objects' : [],
+        'objects' : ['ham'],
         0 : 'Aqui tem café',
         1 : 'Aqui não tem mais café',
         2 : 'Aqui ta fazendo café',
@@ -43,12 +43,17 @@ rooms = {
 
 objects = {
     'spam' : {
-    'txt_in_room' : 'A spam can is here, from monty python',
+    'txt_in_room' : '\nA spam can is here, from monty python',
     'description' : 'The spam can is really cool',
-    'take_txt' : 'You kneel and take the spam'
-    }
+    'take_txt' : 'You kneel and take the spam',
+    },
+    'ham' : {
+    'txt_in_room' : '\nA ham is here, from monty python',
+    'description' : 'The ham can is really cool',
+    'take_txt' : 'You kneel and take the ham',
+    },
 
 
 }
 
-starterinv = ['Arma', 'Badge']
+starterinv = ['arma', 'badge']

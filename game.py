@@ -14,18 +14,26 @@ class Room:
         rooms[room]['txt'] = rooms[room][state]
 
     def take_object(room, item):
-        if item in rooms[room]['objects']:
+        if item in Room(room).objects:
             inventory.append(item)
             rooms[room]['objects'].remove(item)
-            print(objects[item]['take_txt'])
+            print(Objeto(item).take_txt)
         else:
             k = 1/0
 
+    def drop_item(room, item):
+        if item in inventory:
+            inventory.remove(item)
+            rooms[room]['objects'].append(item)
+            print('You dropped the item')
+        else:
+            k = 1/0
 
-class Object:
+class Objeto:
     def __init__(self, item):
         self.text_in_room = objects[item]['txt_in_room']
         self.description = objects[item]['description']
+        self.take_txt = objects[item]['take_txt']
 
 
 def sprint(text, typing_speed = 0):
@@ -71,40 +79,46 @@ def start(jogo):
     #executa sala inicial
     play()
 
-def play(current_room = 'inicial'):
+def play(room = 'inicial'):
     clear()
-    global room
-    room = Room(current_room)
+    global current_room
+    current_room = Room(room)
     #printa o texto da sala
-    sprint(room.txt, room.spd)
+    sprint(current_room.txt, current_room.spd)
     try:
-        sprint([objects[x]['txt_in_room'] for x in room.objects][0], room.spd) #printa texto de objetos na sala
+        sprint(''.join([objects[x]['txt_in_room'] for x in current_room.objects]), current_room.spd) #printa texto de objetos na sala
     except:
         print('nada') #debug pra quando nao tem nada
 
 
     #loop comandos
     while True:
-        user_input = input(room.choicetxt)
+        user_input = input(current_room.choicetxt)
         user_input = user_input.lower() # formatação do input do usuario
 
         if user_input.startswith(ir_db): #checa se o usuario digitou o comando ir(qualquer variaçao)
-            #try:
-            go_to(remove_prefix(user_input.lower(), ir_db))
-            #except:
-               # print('Não consigo ir pra lá!')
+            try:
+                go_to(remove_prefix(user_input.lower(), ir_db))
+            except:
+                print('Não consigo ir pra lá!')
 
         elif user_input.startswith(pegar_db): #checa se o usuario digitou o comando pegar
             try:
-                Room.take_object(current_room, remove_prefix(user_input.lower(), pegar_db))
+                Room.take_object(room, remove_prefix(user_input.lower(), pegar_db))
             except:
                 print('\nNão consigo encontrar esse objeto')
+
+        elif user_input.startswith(largar_db): #checa se o usuario digitou o comando dropar
+            try:
+                Room.drop_item(room, remove_prefix(user_input.lower(), largar_db))
+            except:
+                print('\nNão consigo largar esse objeto ou não possuo ele')
 
         elif user_input.startswith('inventario') or user_input.startswith('inv'):
             print(inventory)
 
         elif user_input.startswith('debug_state '): # comando debug para forçar mudança de estado da sala
-            Room.change_room_state(current_room, int(user_input[12]))
+            Room.change_room_state(room, int(user_input[12]))
             play(current_room)
 
         elif user_input.startswith('debug_goto '): #comando debug para ir para sala mesmo sem conexão
@@ -116,12 +130,13 @@ def play(current_room = 'inicial'):
 
 def go_to(user_input):
     user_input = ''.join(e for e in user_input if e.isalnum())
-    if user_input in room.connections:
+    if user_input in current_room.connections:
         play(user_input)
     else:
         k = 1/0
 
 ir_db = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 pegar_db = ('pegar ', 'take ', 'tomar ', 'get ')
+largar_db = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar ')
 
 menu()
