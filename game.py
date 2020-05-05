@@ -55,6 +55,8 @@ def drop_item(room, item):
 def look(direction = 'around'):
     if direction in same_room_db:
         play(current_room['id'])
+    elif direction in inventory:
+        print(objects[direction]['description'])
     else:
         try:
             sprint(current_room['look_at_'+ direction], current_room['spd'])
@@ -75,33 +77,42 @@ def go_to(arg):
 
 def command(user_input):
     if user_input.startswith('debug'):
-        debug_commands(user_input)
+        debug(user_input)
+    elif user_input.startswith(tuple(custom_commands)):
+        command(current_room['custom_' + user_input])
     else:
         if user_input.startswith(ir_db): #checa se o usuario digitou o comando ir(qualquer variaçao)
-            go_to(remove_prefix(user_input.lower(), ir_db))
+            go_to(remove_prefix(user_input, ir_db))
 
         elif user_input.startswith(pegar_db): #checa se o usuario digitou o comando pegar
-            take_object(current_room['id'], remove_prefix(user_input.lower(), pegar_db))
+            take_object(current_room['id'], remove_prefix(user_input, pegar_db))
 
         elif user_input.startswith(largar_db): #checa se o usuario digitou o comando dropar
-            drop_item(current_room['id'], remove_prefix(user_input.lower(), largar_db))
+            drop_item(current_room['id'], remove_prefix(user_input, largar_db))
 
         elif user_input.startswith('inventario') or user_input.startswith('inv'):
             print("Inventário: " + ','.join(inventory))
 
         elif user_input.startswith(olhar_db):
-            look(remove_prefix(user_input.lower(), olhar_db))
+            look(remove_prefix(user_input, olhar_db))
 
         else:
             print('\nNão entendi o que você quis dizer')
 
 def debug(command):
-    return True
+    if command.startswith('debug_spawn '):
+        rooms[current_room['id']]['objects'].append(command[12:])
+    elif command.startswith('debug_change_state '):
+        rooms[current_room['id']]['txt'] = rooms[current_room['id']][command[19:]]
+        play(current_room['id'])
+
 
 def play(room = 'inicial'):
     clear()
     global current_room
     current_room = rooms[room]
+    global custom_commands
+    custom_commands = [x.replace('custom_', '') for x in current_room.keys() if x.startswith('custom_')]
 
     #printa o texto da sala
     sprint(current_room['txt'], current_room['spd'])
@@ -123,7 +134,7 @@ ir_db = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 pegar_db = ('pegar ', 'take ', 'tomar ', 'get ')
 largar_db = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
 same_room_db =('em volta', 'around', 'aqui')
-olhar_db = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ', 'verificar ', 'observar ')
+olhar_db = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ', 'verificar ', 'observar ', 'inspecionar ', 'analisar ')
 
 #importa o jogo informado no menu
 file = import_module('games.jogo1')

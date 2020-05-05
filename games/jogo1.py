@@ -9,16 +9,23 @@
 rooms = {
     'inicial' : {'id' : 'inicial',
         'txt' : ('Você é D. T. Tive, e acorda numa manhã chata\n'
-        'É um dia chuvoso, e você tem tomar o café para ir trabalhar\n'
-        'A cortina do *banheiro* balança com o vento\n'
-        'Do corredor da *cozinha* você sente um cheiro delicioso de panquecas\n\n'
-        'Dica: Você pode digitar "ir LUGAR" para andar'),
+        'Está muito escuro aqui no quarto\n'
+        'Dica: talvez você possa ACENDER algo\n\n'),
         'spd' : 0,
         'choicetxt' : ('>>'),
         'connections' : ['cozinha','banheiro'],
         'objects' : ['spam', 'ham'],
         'locked' : False,
-        'look_at_norte': 'Ao norte não tem porra nenhuma',
+        'look_at_porta': 'A porta está trancada, a chave deve estar na cozinha',
+        'look_at_corredor' : 'O corredor da cozinha está escuro, talvez eu deva acender a luz antes',
+        'custom_acender' : 'debug_change_state 1',
+        'custom_apagar' : 'debug_change_state 0',
+        '0' : ('Está muito escuro aqui no quarto\nDica: talvez você possa ACENDER algo\n\n'),
+        '1' : ('É um dia chuvoso, e você tem tomar o café para ir trabalhar\n'
+            'A /porta/ do *banheiro* está trancada\n'
+            'Do corredor da *cozinha* você sente um cheiro delicioso de panquecas\n\n'
+            'Dica: Você pode digitar "ir LUGAR" para andar'),
+
         },
     'cozinha' : { 'id' : 'cozinha',
         'txt' : 'Aqui tem café',
@@ -27,9 +34,10 @@ rooms = {
         'connections' : ['inicial','rua'],
         'objects' : ['ham'],
         'locked' : False,
-        0 : 'Aqui tem café',
-        1 : 'Aqui não tem mais café',
-        2 : 'Aqui ta fazendo café',
+        'custom_spam' : 'debug_spawn spam',
+        '0' : 'Aqui tem café',
+        '1' : 'Aqui não tem mais café',
+        '2' : 'Aqui ta fazendo café',
         },
     'banheiro' : { 'id' : 'banheiro',
         'txt' : ('this is bathroom, you can only go back to inicial'),
@@ -38,7 +46,7 @@ rooms = {
         'connections' : ['inicial'],
         'objects' : [],
         'locked' : True,
-        'locked_txt' : 'The bathroom is locked'
+        'locked_txt' : 'The bathroom is locked',
         },
     'rua' : { 'id' : 'rua',
         'txt' : ('This is outside, you can only go to kitchen'),
@@ -67,6 +75,7 @@ objects = {
     },
     'arma' : {
     'portable' : False,
+    'description' : 'My trusty colt m1911',
     'drop_fail_txt' : 'It would be unwise to leave my gun here',
     }
 
