@@ -55,13 +55,27 @@ def drop_item(room, item):
 def look(direction = 'around'):
     if direction in same_room_db:
         play(current_room['id'])
-    elif direction in inventory:
+    elif direction in inventory or direction in rooms[current_room['id']]['objects']:
         print(objects[direction]['description'])
     else:
         try:
             sprint(current_room['look_at_'+ direction], current_room['spd'])
         except:
             print(f" I don't know where {direction} is")
+
+def use(item):
+    if item in inventory or item in rooms[current_room['id']]['objects']:
+        try:
+            sprint(rooms[current_room['id']]['use_txt_' + item])
+        except:
+            print("I can't use {item} here")
+        try:
+            command(current_room['use_' + item])
+        except:
+            pass
+
+    else:
+        print(f"I don't see {item} anywhere")
 
 def go_to(arg):
     arg = ''.join(e for e in arg if e.isalnum())
@@ -96,8 +110,11 @@ def command(user_input):
         elif user_input.startswith(olhar_db):
             look(remove_prefix(user_input, olhar_db))
 
+        elif user_input.startswith(usar_db):
+            use(remove_prefix(user_input, usar_db))
+
         else:
-            print('\nNão entendi o que você quis dizer')
+            print('Não entendi o que você quis dizer')
 
 def debug(command):
     if command.startswith('debug_spawn '):
@@ -128,6 +145,11 @@ def debug(command):
     elif command.startswith('debug_tp '):
         play(rooms[command[9:]]['id'])
 
+    elif command.startswith('debug_unlock '):
+        rooms[command[13:]]['locked'] = False
+
+    elif command.startswith('debug_lock '):
+        rooms[command[11:]]['locked'] = True
 
 
 
@@ -143,8 +165,9 @@ def play(room = 'inicial'):
     try:
         sprint(''.join([objects[x]['txt_in_room'] for x in current_room['objects']]), current_room['spd']) #printa texto de objetos na sala
     except:
-        print('nada') #debug pra quando nao tem nada
-
+        print('Object without description in ground') #debug pra quando nao tem nada
+    if not current_room['objects']:
+        print('nada1')
     #loop comandos
     while True:
         user_input = input(current_room['choicetxt'])
@@ -158,7 +181,9 @@ ir_db = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 pegar_db = ('pegar ', 'take ', 'tomar ', 'get ')
 largar_db = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
 same_room_db =('em volta', 'around', 'aqui')
-olhar_db = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ', 'verificar ', 'observar ', 'inspecionar ', 'analisar ')
+olhar_db = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ', 'verificar ', 'observar ',
+            'inspecionar ', 'analisar ', 'look ', 'look at', 'inspect ', 'examine ', 'observe ')
+usar_db = ('usar ', 'use ', 'utilizar ', 'utilize ')
 
 #importa o jogo informado no menu
 file = import_module('games.jogo1')
