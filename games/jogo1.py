@@ -1,11 +1,27 @@
-#    'cozinha' : {'txt' : 'Aqui tem café',
-#        'spd' : 0,
-#        'choicetxt' : ('>>'),
-#        'connections' : ('inicial','rua'),
-#        0 : 'Aqui tem café',
-#        1 : 'Aqui não tem mais café',
-#        2 : 'Aqui ta fazendo café',
-#        },
+"""
+rooms = {
+    'inicial': {'id': 'inicial',
+                'txt': ('Linha 1\n'
+                        'Linha 2\n'
+                        'Linha 3\n\n'),
+                'spd': 0,
+                'choicetxt': ('>>'),
+                'connections': ['sala1', 'sala2'],
+                'objects': ['objeto1', 'objeto2'],
+                'locked': False,
+                'locked_txt' : ''
+                'look_at_porta': 'Texto ao olhar pra porta',
+                'look_at_corredor': 'Texto ao olhar para corredor',
+                'custom_comando1': 'o que o texto comando1 deve exec',
+                'custom_comando2': 'o que o texto comando2 deve exec',
+                'use_item': 'o que o item deve executar se executado aqui',
+                'use_txt_item': 'o que deve printar quando usar item',
+                '0': ('Linha 1\nLinha 2\nLinha 3\n\n'),
+                '1': ('estado 1 Linha 1\n estado 2 Linha 2\n estado 3 Linha 3\n\n'),
+
+                },
+}
+"""
 rooms = {
     'inicial': {'id': 'inicial',
                 'txt': ('Você é D. T. Tive, e acorda numa manhã chata\n'

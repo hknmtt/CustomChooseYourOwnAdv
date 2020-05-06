@@ -10,8 +10,9 @@ def clear():
 
 
 def sprint(text, typing_speed=0):
+    """ Takes a text and and speed and prints as a human would."""
     typing_speed = int(typing_speed)
-    # Caso tempo for 0 ou não especificado, apenas printa de forma normal
+    # Caso tempo for 0 ou não especificado, apenas printa normal
     if typing_speed == 0:
         print(text)
     # Se nao, printa o texto de uma forma que um humano escreveria de acordo
@@ -25,6 +26,7 @@ def sprint(text, typing_speed=0):
 
 
 def remove_prefix(text, command):
+    """ Takes an input, and a database of commands, and remove the commands."""
     for word in command[:]:
         if text.startswith(word):
             new_text = text[len(word):]
@@ -36,6 +38,7 @@ def change_room_state(room, state):
 
 
 def take_object(room, item):
+    """ Takes a room id, and an item, and transfers item from room to inv."""
     if item in rooms[room]['objects'] and not objects[item]['portable']:
         try:
             print(objects[item]['take_fail_txt'])
@@ -50,6 +53,7 @@ def take_object(room, item):
 
 
 def drop_item(room, item):
+    """ Takes a room id, and an item, and transfers the item from inv to room."""
     if item in inventory and not objects[item]['portable']:
         try:
             print(objects[item]['drop_fail_txt'])
@@ -64,6 +68,7 @@ def drop_item(room, item):
 
 
 def look(direction='around'):
+    """ Looks to either an item in inv, or a object in room"""
     if direction in SAME_ROOM_DB:
         play(CURRENT_ROOM['id'])
     elif (direction in inventory or
@@ -77,13 +82,14 @@ def look(direction='around'):
 
 
 def use(item):
+    """ Tries to use an item from inv or room."""
     if item in inventory or item in rooms[CURRENT_ROOM['id']]['objects']:
         try:
             sprint(rooms[CURRENT_ROOM['id']]['use_txt_' + item])
         except KeyError:
             print("I can't use {item} here")
         try:
-            command(CURRENT_ROOM['use_' + item])
+            comando(CURRENT_ROOM['use_' + item])
         except KeyError:
             pass
 
@@ -92,6 +98,7 @@ def use(item):
 
 
 def go_to(arg):
+    """ Takes a room id and tries to go there from the current room."""
     arg = ''.join(e for e in arg if e.isalnum())
     if arg in CURRENT_ROOM['connections'] and rooms[arg]['locked']:
         try:
@@ -105,21 +112,19 @@ def go_to(arg):
 
 
 def comando(user_input):
+    """ Takes a string and executes it."""
     if user_input.startswith('debug'):
         debug(user_input)
     elif user_input.startswith(tuple(CUSTOM_COMMANDS)):
         comando(CURRENT_ROOM['custom_' + user_input])
     else:
-        # checa se o usuario digitou o comando ir(qualquer variaçao)
         if user_input.startswith(IR_DB):
             go_to(remove_prefix(user_input, IR_DB))
 
-        # checa se o usuario digitou o comando pegar
         elif user_input.startswith(PEGAR_DB):
             take_object(CURRENT_ROOM['id'],
                         remove_prefix(user_input, PEGAR_DB))
 
-        # checa se o usuario digitou o comando dropar
         elif user_input.startswith(LARGAR_DB):
             drop_item(CURRENT_ROOM['id'],
                       remove_prefix(user_input, LARGAR_DB))
@@ -139,6 +144,7 @@ def comando(user_input):
 
 
 def debug(user_input):
+    """ Equivalent to comando() but with more powerful commands."""
     if user_input.startswith('debug_spawn '):
         rooms[CURRENT_ROOM['id']]['objects'].append(user_input[12:])
 
@@ -175,8 +181,9 @@ def debug(user_input):
 
 
 def play(room='inicial'):
+    """ Take's room id and plays it."""
     clear()
-    global CURRENT_ROOM
+    global CURRENT_ROOM #CURRENT_ROOM is a dict that is not mutable
     CURRENT_ROOM = rooms[room]
     global CUSTOM_COMMANDS
     CUSTOM_COMMANDS = [x.replace('custom_', '')
@@ -193,14 +200,14 @@ def play(room='inicial'):
         print('Object without description in ground')
     if not CURRENT_ROOM['objects']:
         print('nada1')
-    # loop comandos
+
     while True:
         user_input = input(CURRENT_ROOM['choicetxt'])
         user_input = user_input.lower()  # formatação do input do usuario
 
         comando(user_input)
 
-
+# Contants of equivalent commands terms
 IR_DB = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 PEGAR_DB = ('pegar ', 'take ', 'tomar ', 'get ')
 LARGAR_DB = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
@@ -212,7 +219,7 @@ USAR_DB = ('usar ', 'use ', 'utilizar ', 'utilize ')
 
 # importa o jogo informado no menu
 file = import_module('games.jogo1')
-# importa o dict do jogo
+# importa os dicts do jogo
 rooms = getattr(file, 'rooms')
 objects = getattr(file, 'objects')
 inventory = getattr(file, 'starterinv')
