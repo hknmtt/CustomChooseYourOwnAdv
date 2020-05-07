@@ -70,7 +70,7 @@ def drop_item(room, item):
 def look(direction='around'):
     """ Looks to either an item in inv, or a object in room"""
     if direction in SAME_ROOM_DB:
-        play(CURRENT_ROOM['id'])
+        return CURRENT_ROOM['id'] #sets current_room to itself to print again
     elif (direction in inventory or
           direction in rooms[CURRENT_ROOM['id']]['objects']):
         print(objects[direction]['description'])
@@ -97,47 +97,47 @@ def use(item):
         print(f"I don't see {item} anywhere")
 
 
-def go_to(arg):
+def go_to(roomid):
     """ Takes a room id and tries to go there from the current room."""
-    arg = ''.join(e for e in arg if e.isalnum())
-    if arg in CURRENT_ROOM['connections'] and rooms[arg]['locked']:
+    roomid = ''.join(e for e in roomid if e.isalnum())
+    if roomid in CURRENT_ROOM['connections'] and rooms[roomid]['locked']:
         try:
-            print(rooms[arg]['locked_txt'])
+            print(rooms[roomid]['locked_txt'])
         except KeyError:
             print('The way is blocked')
-    elif arg in CURRENT_ROOM['connections'] and not rooms[arg]['locked']:
-        play(arg)
+    elif roomid in CURRENT_ROOM['connections'] and not rooms[roomid]['locked']:
+        return roomid #sets current_room to roomid and replays gameloop
     else:
-        print(f"I can't go to {arg} from here, or i don't know where it is")
+        print(f"I can't go to {roomid} from here, or i don't know where it is")
 
 
 def comando(user_input):
     """ Takes a string and executes it."""
     if user_input.startswith('debug'):
-        debug(user_input)
+        return debug(user_input)
     elif user_input.startswith(tuple(CUSTOM_COMMANDS)):
-        comando(CURRENT_ROOM['custom_' + user_input])
+        return comando(CURRENT_ROOM['custom_' + user_input])
     else:
         if user_input.startswith(IR_DB):
-            go_to(remove_prefix(user_input, IR_DB))
+            return go_to(remove_prefix(user_input, IR_DB))
 
         elif user_input.startswith(PEGAR_DB):
-            take_object(CURRENT_ROOM['id'],
-                        remove_prefix(user_input, PEGAR_DB))
+            return take_object(CURRENT_ROOM['id'],
+                               remove_prefix(user_input, PEGAR_DB))
 
         elif user_input.startswith(LARGAR_DB):
-            drop_item(CURRENT_ROOM['id'],
-                      remove_prefix(user_input, LARGAR_DB))
+            return drop_item(CURRENT_ROOM['id'],
+                             remove_prefix(user_input, LARGAR_DB))
 
         elif (user_input.startswith('inventario') or
               user_input.startswith('inv')):
             print("Inventário: " + ', '.join(inventory))
 
         elif user_input.startswith(OLHAR_DB):
-            look(remove_prefix(user_input, OLHAR_DB))
+            return look(remove_prefix(user_input, OLHAR_DB))
 
         elif user_input.startswith(USAR_DB):
-            use(remove_prefix(user_input, USAR_DB))
+            return use(remove_prefix(user_input, USAR_DB))
 
         else:
             print('Não entendi o que você quis dizer')
@@ -168,10 +168,10 @@ def debug(user_input):
 
     elif user_input.startswith('debug_change_state '):
         rooms[CURRENT_ROOM['id']]['txt'] = CURRENT_ROOM[user_input[19:]]
-        play(CURRENT_ROOM['id'])
+        return CURRENT_ROOM['id'] #replays same room
 
     elif user_input.startswith('debug_tp '):
-        play(rooms[user_input[9:]]['id'])
+        return rooms[user_input[9:]]['id'] #set current room to informed tp
 
     elif user_input.startswith('debug_unlock '):
         rooms[user_input[13:]]['locked'] = False
@@ -180,12 +180,28 @@ def debug(user_input):
         rooms[user_input[11:]]['locked'] = True
 
 
-def play(room='inicial'):
-    """ Take's room id and plays it."""
+
+# Contants of equivalent commands terms
+IR_DB = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
+PEGAR_DB = ('pegar ', 'take ', 'tomar ', 'get ')
+LARGAR_DB = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
+SAME_ROOM_DB = ('em volta', 'around', 'aqui')
+OLHAR_DB = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ',
+            'verificar ', 'observar ', 'inspecionar ', 'analisar ',
+            'look ', 'look at', 'inspect ', 'examine ', 'observe ')
+USAR_DB = ('usar ', 'use ', 'utilizar ', 'utilize ')
+
+# importa o jogo informado no menu
+file = import_module('games.jogo1')
+# importa os dicts do jogo
+rooms = getattr(file, 'rooms')
+objects = getattr(file, 'objects')
+inventory = getattr(file, 'starterinv')
+# executa sala inicial
+CURRENT_ROOM = rooms['inicial']
+
+while 'Brasil' != 'Ditadura':
     clear()
-    global CURRENT_ROOM #CURRENT_ROOM is a dict that is not mutable
-    CURRENT_ROOM = rooms[room]
-    global CUSTOM_COMMANDS
     CUSTOM_COMMANDS = [x.replace('custom_', '')
                        for x in CURRENT_ROOM.keys() if x.startswith('custom_')]
 
@@ -205,24 +221,9 @@ def play(room='inicial'):
         user_input = input(CURRENT_ROOM['choicetxt'])
         user_input = user_input.lower()  # formatação do input do usuario
 
-        comando(user_input)
+        foo = comando(user_input)
+        if foo != None:
+            CURRENT_ROOM = rooms[foo]
+            break
 
-# Contants of equivalent commands terms
-IR_DB = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
-PEGAR_DB = ('pegar ', 'take ', 'tomar ', 'get ')
-LARGAR_DB = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
-SAME_ROOM_DB = ('em volta', 'around', 'aqui')
-OLHAR_DB = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ',
-            'verificar ', 'observar ', 'inspecionar ', 'analisar ',
-            'look ', 'look at', 'inspect ', 'examine ', 'observe ')
-USAR_DB = ('usar ', 'use ', 'utilizar ', 'utilize ')
 
-# importa o jogo informado no menu
-file = import_module('games.jogo1')
-# importa os dicts do jogo
-rooms = getattr(file, 'rooms')
-objects = getattr(file, 'objects')
-inventory = getattr(file, 'starterinv')
-# executa sala inicial
-CURRENT_ROOM = 'inicial'
-play(CURRENT_ROOM)
