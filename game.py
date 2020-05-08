@@ -33,6 +33,33 @@ def remove_prefix(text, command):
     return new_text
 
 
+
+def print_room_txt(active_look):
+    """Takes an boolean, and if True, prints roomtxt+allobjects, if false,
+     roomtxt+allplaintsightobjects"""
+    sprint(CURRENT_ROOM['txt'], CURRENT_ROOM['spd'])
+    if active_look:
+        try:
+            sprint('\n'.join([objects[x]['txt_in_room']
+                              for x in CURRENT_ROOM['objects']]),
+                    CURRENT_ROOM['spd'])
+        except KeyError:
+            # debug pra quando nao tem nada
+            print('Object without description in ground')
+        if not CURRENT_ROOM['objects']:
+            print('nada1')
+
+    else:
+        try:
+            sprint('\n'.join([objects[x]['txt_in_room']
+                          for x in CURRENT_ROOM['objects']
+                          if objects[x]['plainsight']]),
+                    CURRENT_ROOM['spd'])
+        except KeyError:
+         # debug pra quando nao tem nada
+            print('Object without description in ground')
+        if not CURRENT_ROOM['objects']:
+            print('nada2')
 def change_room_state(room, state):
     rooms[room]['txt'] = rooms[room][state]
 
@@ -70,7 +97,7 @@ def drop_item(room, item):
 def look(direction='around'):
     """ Looks to either an item in inv, or a object in room"""
     if direction in SAME_ROOM_DB:
-        return CURRENT_ROOM['id'] #sets current_room to itself to print again
+        print_room_txt(True)
     elif (direction in inventory or
           direction in rooms[CURRENT_ROOM['id']]['objects']):
         print(objects[direction]['description'])
@@ -184,7 +211,7 @@ def debug(user_input):
 # Contants of equivalent commands terms
 IR_DB = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
 PEGAR_DB = ('pegar ', 'take ', 'tomar ', 'get ')
-LARGAR_DB = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar')
+LARGAR_DB = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar ')
 SAME_ROOM_DB = ('em volta', 'around', 'aqui')
 OLHAR_DB = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ',
             'verificar ', 'observar ', 'inspecionar ', 'analisar ',
@@ -192,7 +219,7 @@ OLHAR_DB = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ',
 USAR_DB = ('usar ', 'use ', 'utilizar ', 'utilize ')
 
 # importa o jogo informado no menu
-file = import_module('games.jogo1')
+file = import_module('games.tutorial')
 # importa os dicts do jogo
 rooms = getattr(file, 'rooms')
 objects = getattr(file, 'objects')
@@ -206,24 +233,20 @@ while 'Brasil' != 'Ditadura':
                        for x in CURRENT_ROOM.keys() if x.startswith('custom_')]
 
     # printa o texto da sala
-    sprint(CURRENT_ROOM['txt'], CURRENT_ROOM['spd'])
-    try:
-        sprint('\n'.join([objects[x]['txt_in_room']
-                          for x in CURRENT_ROOM['objects']]),
-               CURRENT_ROOM['spd'])  # printa texto de objetos na sala
-    except KeyError:
-        # debug pra quando nao tem nada
-        print('Object without description in ground')
-    if not CURRENT_ROOM['objects']:
-        print('nada1')
+    print_room_txt(False)
 
-    while True:
-        user_input = input(CURRENT_ROOM['choicetxt'])
-        user_input = user_input.lower()  # formatação do input do usuario
+    #checa se é uma sala de apenas texto
+    if 'skip_room' in CURRENT_ROOM:
+        input(CURRENT_ROOM['choicetxt'])
+        CURRENT_ROOM = rooms[rooms[CURRENT_ROOM['id']]['skip_room']]
+    else:
+        while True:
+            user_input = input(CURRENT_ROOM['choicetxt'])
+            user_input = user_input.lower()  # formatação do input do usuario
 
-        foo = comando(user_input)
-        if foo != None:
-            CURRENT_ROOM = rooms[foo]
-            break
+            foo = comando(user_input)
+            if foo != None:
+                CURRENT_ROOM = rooms[foo]
+                break
 
 
