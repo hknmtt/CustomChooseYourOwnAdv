@@ -23,12 +23,20 @@ rooms = {
 }
 """
 rooms = {
-    'inicial': {'id': 'inicial',
+    'inicial': {
+                'id': 'inicial',
                 'txt': ('Você é D. T. Tive, e acorda numa manhã chata\n'
                         'Está muito escuro aqui no quarto\n'
                         'Dica: talvez você possa ACENDER algo\n\n'),
                 'spd': 0,
                 'choicetxt': ('>>'),
+                'connections_dict':
+                    {
+                    's' : 'banheiro',
+                    'south': 'banheiro',
+                    'sul': 'banheiro',
+                    'bathroom': 'banheiro',
+                    },
                 'connections': ['cozinha', 'banheiro'],
                 'objects': [],
                 'locked': False,

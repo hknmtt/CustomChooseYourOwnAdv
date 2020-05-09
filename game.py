@@ -127,6 +127,13 @@ def use(item):
 def go_to(roomid):
     """ Takes a room id and tries to go there from the current room."""
     roomid = ''.join(e for e in roomid if e.isalnum())
+    try:
+        if roomid in CURRENT_ROOM['connections_dict'].keys():
+            roomid = CURRENT_ROOM['connections_dict'][roomid]
+    except KeyError:
+        pass
+
+
     if roomid in CURRENT_ROOM['connections'] and rooms[roomid]['locked']:
         try:
             print(rooms[roomid]['locked_txt'])
@@ -135,7 +142,7 @@ def go_to(roomid):
     elif roomid in CURRENT_ROOM['connections'] and not rooms[roomid]['locked']:
         return roomid #sets current_room to roomid and replays gameloop
     else:
-        print(f"I can't go to {roomid} from here, or i don't know where it is")
+        print(f"I can't go to {roomid} from here, or i don't know asdasdasd it is")
 
 
 def comando(user_input):
@@ -219,7 +226,7 @@ OLHAR_DB = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ',
 USAR_DB = ('usar ', 'use ', 'utilizar ', 'utilize ')
 
 # importa o jogo informado no menu
-file = import_module('games.tutorial')
+file = import_module('games.jogo1')
 # importa os dicts do jogo
 rooms = getattr(file, 'rooms')
 objects = getattr(file, 'objects')
