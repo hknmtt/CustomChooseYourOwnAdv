@@ -103,7 +103,7 @@ def look(direction='around'):
         print(objects[direction]['description'])
     else:
         try:
-            sprint(CURRENT_ROOM['look_at_' + direction], CURRENT_ROOM['spd'])
+            print(CURRENT_ROOM['look_at_' + direction])
         except KeyError:
             print(f" I don't know where {direction} is")
 
@@ -112,13 +112,15 @@ def use(item):
     """ Tries to use an item from inv or room."""
     if item in inventory or item in rooms[CURRENT_ROOM['id']]['objects']:
         try:
-            sprint(rooms[CURRENT_ROOM['id']]['use_txt_' + item])
-        except KeyError:
-            print("I can't use {item} here")
-        try:
-            comando(CURRENT_ROOM['use_' + item])
+            print(rooms[CURRENT_ROOM['id']]['use_txt_' + item])
         except KeyError:
             pass
+        try:
+            for x in CURRENT_ROOM['use_' + item].split(' && '):
+                y = comando(x)
+            return y
+        except KeyError:
+            print(f"I can't use {item} here")
 
     else:
         print(f"I don't see {item} anywhere")
@@ -218,9 +220,9 @@ def debug(user_input):
 
 
 # Contants of equivalent commands terms
-IR_DB = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto')
-PEGAR_DB = ('pegar ', 'take ', 'tomar ', 'get ')
-LARGAR_DB = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar ')
+IR_DB = ('ir ', 'ir para', 'go ', 'go to', 'ir pra', 'goto', 'ir pela', 'go through')
+PEGAR_DB = ('pegar ', 'take ', 'tomar ', 'get ', 'pegar a', 'pegar o')
+LARGAR_DB = ('largar ', 'dropar ', 'drop ', 'place ', 'colocar ', 'largar a ', 'largar o','colocar o','colocar a')
 SAME_ROOM_DB = ('em volta', 'around', 'aqui')
 OLHAR_DB = ('ver ', 'olhar ', 'olhar para ', 'olhar pra ', 'espiar ',
             'verificar ', 'observar ', 'inspecionar ', 'analisar ',
@@ -257,5 +259,3 @@ while 'Brasil' != 'Ditadura':
             if foo != None:
                 CURRENT_ROOM = rooms[foo]
                 break
-
-

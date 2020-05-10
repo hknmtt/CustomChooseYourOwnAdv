@@ -23,95 +23,78 @@ rooms = {
 }
 """
 rooms = {
-    'inicial': {
-                'id': 'inicial',
-                'txt': ('Você é D. T. Tive, e acorda numa manhã chata\n'
-                        'Está muito escuro aqui no quarto\n'
-                        'Dica: talvez você possa ACENDER algo\n\n'),
-                'spd': 0,
+    'inicial': {'id': 'inicial',
+                'txt': ('   Por que acordei aqui? Onde estou?\n'
+                        '   Preciso sair daqui...\n\n'),
+                'spd': 150,
+                'choicetxt': ('Pressione ENTER para continuar...'),
+                'objects': [],
+                'skip_room': 'sala1',
+                },
+    'sala1': {'id': 'sala1',
+                'txt': ('    As paredes são feitas de tijolos de pedra, todos úmidos'
+                ' e cheios de musgos verdes. O ar viciado e cheio de poeira declara'
+                ' que este lugar não vê o sol a muito tempo\n'
+                '   Há uma /passagem/  com teias de aranha\n'
+                'Dica: Talvez você possa ***IR*** ou ***OLHAR*** para algo\n\n') ,
+                'spd': 150,
                 'choicetxt': ('>>'),
-                'connections_dict':
-                    {
-                    's' : 'banheiro',
-                    'south': 'banheiro',
-                    'sul': 'banheiro',
-                    'bathroom': 'banheiro',
-                    },
-                'connections': ['cozinha', 'banheiro'],
+                'connections_dict': {
+                                    'passagem' : 'sala2'
+                                    },
+                'connections': ['sala2'],
                 'objects': [],
                 'locked': False,
-                'look_at_porta': 'A porta está trancada, a chave deve estar na cozinha',
-                'look_at_corredor': 'O corredor da cozinha está escuro, talvez eu deva acender a luz antes',
-                'custom_acender': 'debug_change_state 1',
-                'custom_apagar': 'debug_change_state 0 && debug_tp banheiro',
-                'use_chave': 'debug_unlock banheiro',
-                'use_txt_chave': "I've unlocked the bathroom",
-                '0': ('Está muito escuro aqui no quarto\nDica: talvez você possa ACENDER algo\n\n'),
-                '1': ('É um dia chuvoso, e você tem tomar o café para ir trabalhar\n'
-                      'A /porta/ do *banheiro* está trancada\n'
-                      'Do corredor da *cozinha* você sente um cheiro delicioso de panquecas\n\n'
-                      'Dica: Você pode digitar "ir LUGAR" para andar'),
-
+                'look_at_passagem': ('Essa passagem é feita de um arco com as mesmas pedras'
+                                    ' da parede. Há uma fina camada de teia cobrindo os cantos da passagem.'),
                 },
-    'cozinha': {'id': 'cozinha',
-                'txt': 'Aqui tem café',
-                'spd': 0,
-                'choicetxt': ('>>'),
-                'connections': ['inicial', 'rua'],
-                'objects': ['chave'],
-                'locked': False,
-                'custom_spam': 'debug_spawn spam',
-                '0': 'Aqui tem café',
-                '1': 'Aqui não tem mais café',
-                '2': 'Aqui ta fazendo café',
-                },
-    'banheiro': {'id': 'banheiro',
-                 'txt': ('this is bathroom, you can only go back to inicial'),
+    'sala2': {'id': 'sala2',
+                 'txt': ('  Diferente da sala anterior, aqui tem uma /mesa/ com uma gaveta.\n'
+                         'Há uma /passagem/ de arco com teia, e uma /porta/ de pedra ao lado'
+                         ' oposto da passagem\n\n'),
+                 'spd': 150,
+                 'choicetxt': ('>>'),
+                 'connections_dict': {
+                                     'porta': 'sala3'
+                                     },
+                 'connections': ['sala1','sala3'],
+                 'objects': ['chave','porta'],
+                 'locked': False,
+                 'look_at_passagem': ('Essa passagem é feita de um arco com as mesmas pedras'
+                                    ' da parede. Há uma fina camada de teia cobrindo os cantos da passagem.'),
+                 'look_at_mesa': 'Na gaveta, há uma .chave.\n Dica: Talvez eu possa ***PEGAR*** algo',
+                 'look_at_gaveta': 'Na gaveta, há uma .chave.\n Dica: Talvez eu possa ***PEGAR*** algo',
+                 'custom_abrir gaveta':  'olhar mesa',
+                 'use_chave': 'debug_unlock sala3 && debug_remove_item chave',
+                 'use_txt_chave': "Coloquei a chave na fechadura da porta, e ela se abriu... A chave parece estar presa a porta agora",
+                 },
+    'sala3': {'id': 'sala3',
+                 'txt': ('This is outside, you can only go to kitchen'),
                  'spd': 0,
                  'choicetxt': ('>>'),
-                 'connections': ['inicial'],
+                 'connections': ['cozinha'],
                  'objects': [],
                  'locked': True,
-                 'locked_txt': 'The bathroom is locked',
-                 },
-    'rua': {'id': 'rua',
-            'txt': ('This is outside, you can only go to kitchen'),
-            'spd': 0,
-            'choicetxt': ('>>'),
-            'connections': ['cozinha'],
-            'objects': [],
-            'locked': True,
+                 'locked_txt': 'A porta está fechada, talvez se eu ***USAR*** algo ela abra',
             },
 }
 
 
 objects = {
-    'spam': {
-        'txt_in_room': 'A spam can is here, from monty python',
-        'description': 'The spam can is really cool',
-        'take_txt': 'You kneel and take the spam',
-        'portable': True,
-    },
-    'ham': {
-        'txt_in_room': 'A ham is here, from monty python',
-        'description': 'The ham can is really cool',
-        'take_txt': 'You kneel and take the ham',
-        'portable': False,
-        'take_fail_txt': "The ham is way too heavy",
-    },
-    'arma': {
-        'portable': False,
-        'description': 'My trusty colt m1911',
-        'drop_fail_txt': 'It would be unwise to leave my gun here',
-    },
     'chave': {
-        'txt_in_room': 'There is a key lying around here',
-        'description': 'A golden key',
-        'take_txt': 'I took the key',
+        'txt_in_room': 'Uma .chave. se encontra aqui',
+        'description': 'Uma .chave. dourada, gelada ao toque',
+        'take_txt': 'Peguei a .chave. e guardei em meu bolso',
         'portable': True,
+        'plainsight': False,
     },
-
+    'porta': {
+        'txt_in_room': 'cu',
+        'description': 'Uma porta de pedra, com uma fechadura',
+        'portable': False,
+        'plainsight': False,
+    },
 
 }
 
-starterinv = ['arma']
+starterinv = []
