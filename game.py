@@ -150,7 +150,9 @@ def comando(user_input):
     if user_input.startswith('debug'):
         return debug(user_input)
     elif user_input.startswith(tuple(CUSTOM_COMMANDS)):
-        return comando(CURRENT_ROOM['custom_' + user_input])
+        for x in CURRENT_ROOM['custom_' + user_input].split(' && '):
+            y = comando(x)
+        return y
     else:
         if user_input.startswith(IR_DB):
             return go_to(remove_prefix(user_input, IR_DB))

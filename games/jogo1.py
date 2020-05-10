@@ -43,7 +43,7 @@ rooms = {
                 'look_at_porta': 'A porta está trancada, a chave deve estar na cozinha',
                 'look_at_corredor': 'O corredor da cozinha está escuro, talvez eu deva acender a luz antes',
                 'custom_acender': 'debug_change_state 1',
-                'custom_apagar': 'debug_change_state 0',
+                'custom_apagar': 'debug_change_state 0 && debug_tp banheiro',
                 'use_chave': 'debug_unlock banheiro',
                 'use_txt_chave': "I've unlocked the bathroom",
                 '0': ('Está muito escuro aqui no quarto\nDica: talvez você possa ACENDER algo\n\n'),
